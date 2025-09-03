@@ -18,7 +18,6 @@ npm install
 ### 3. Chạy dev server
 
 ### 📂 Cấu trúc thư mục
-## 📂 Cấu trúc thư mục
 
 ```bash
 .

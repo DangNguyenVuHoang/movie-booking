@@ -4,6 +4,7 @@
 
 🌐 **Demo**: [Movie Booking App trên Vercel](https://movie-booking-vert.vercel.app/)
 
+**Link Task google sheet: https://docs.google.com/spreadsheets/d/1_mnbyOIuLLYB4T-H5eN3wSouTu3efU0B9ZtIXcc6x-Y/edit?usp=sharing
 ---
 
 ## 🚀 Cài đặt & Chạy dự án

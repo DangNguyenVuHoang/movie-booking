@@ -4,8 +4,8 @@ import HomePage from "../HomePage";
 import ListMoviePage from "../ListMoviePage";
 import ListMovieDetail from "../ListMovieDetail";
 import AccountPage from "../AccountPage";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+// import Header from "../../components/Header";
+// import Footer from "../../components/Footer";
 
 export default function UserDashboard() {
   return (

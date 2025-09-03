@@ -18,23 +18,23 @@ npm install
 ### 3. Chạy dev server
 
 ### 📂 Cấu trúc thư mục
-MOVIE-BOOKING-FULL
-├── .git/
-├── node_modules/
+.
+├── public/               # Static assets
 ├── src/
-│   ├── api/
-│   ├── components/
-│   ├── layouts/
-│   ├── pages/
-│   ├── redux/
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
+│   ├── api/              # Cấu hình axios & gọi API
+│   ├── components/       # Các component dùng chung
+│   ├── layouts/          # Layouts (header, footer, main layout)
+│   ├── pages/            # Các trang chính (Home, Detail, Booking, Admin...)
+│   ├── redux/            # Redux store, slices
+│   ├── App.jsx           # Root component
+│   ├── index.css         # Global styles
+│   └── main.jsx          # Entry point
 ├── index.html
 ├── package-lock.json
 ├── package.json
 ├── README.md
 └── vite.config.js
+
 
 ### 🛠 Công nghệ sử dụng
 ⚛️ React + Vite: Frontend framework & build tool

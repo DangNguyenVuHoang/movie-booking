@@ -18,6 +18,9 @@ npm install
 ### 3. Chạy dev server
 
 ### 📂 Cấu trúc thư mục
+## 📂 Cấu trúc thư mục
+
+```bash
 .
 ├── public/               # Static assets
 ├── src/
@@ -34,6 +37,8 @@ npm install
 ├── package.json
 ├── README.md
 └── vite.config.js
+```
+
 
 
 ### 🛠 Công nghệ sử dụng

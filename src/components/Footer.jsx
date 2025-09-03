@@ -1,3 +1,4 @@
+// src/components/Footer.jsx
 import { Container, Row, Col } from "react-bootstrap";
 import {
   FacebookFilled,
@@ -6,9 +7,14 @@ import {
   MailOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Footer() {
+  const location = useLocation();
+
+  // ❌ Không render Footer trong admin
+  if (location.pathname.startsWith("/admin")) return null;
+
   return (
     <footer className="bg-dark text-white pt-5 pb-3 mt-5">
       <Container>
@@ -17,7 +23,8 @@ export default function Footer() {
           <Col md={4}>
             <h4 className="text-danger fw-bold">🎬 Movie Booking</h4>
             <p className="text-light small mt-3">
-              Đặt vé xem phim nhanh chóng, tiện lợi và an toàn.  
+              Đặt vé xem phim nhanh chóng, tiện lợi và an toàn.
+              <br />
               Trải nghiệm điện ảnh tuyệt vời cùng chúng tôi!
             </p>
           </Col>
@@ -27,22 +34,34 @@ export default function Footer() {
             <h5 className="fw-semibold text-white mb-3">Liên kết nhanh</h5>
             <ul className="list-unstyled">
               <li>
-                <Link to="/" className="text-light text-decoration-none">
+                <Link
+                  to="/user/home"
+                  className="text-light text-decoration-none d-block mb-2"
+                >
                   Trang chủ
                 </Link>
               </li>
               <li>
-                <Link to="/movies" className="text-light text-decoration-none">
+                <Link
+                  to="/user/movies"
+                  className="text-light text-decoration-none d-block mb-2"
+                >
                   Phim
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-light text-decoration-none">
-                  Liên hệ
+                <Link
+                  to="/user/account"
+                  className="text-light text-decoration-none d-block mb-2"
+                >
+                  Tài khoản
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-light text-decoration-none">
+                <Link
+                  to="/about"
+                  className="text-light text-decoration-none d-block mb-2"
+                >
                   Giới thiệu
                 </Link>
               </li>
@@ -63,7 +82,7 @@ export default function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-light fs-4"
+                className="text-light fs-4 hover-opacity"
               >
                 <FacebookFilled />
               </a>
@@ -71,7 +90,7 @@ export default function Footer() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-light fs-4"
+                className="text-light fs-4 hover-opacity"
               >
                 <TwitterSquareFilled />
               </a>
@@ -79,7 +98,7 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-light fs-4"
+                className="text-light fs-4 hover-opacity"
               >
                 <InstagramFilled />
               </a>

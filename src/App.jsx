@@ -6,55 +6,44 @@ import HomePage from "./pages/HomePage.jsx";
 import ListMoviePage from "./pages/ListMoviePage.jsx";
 import ListMovieDetail from "./pages/ListMovieDetail.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
-import AdminDashboard from "./pages/admin/AdminDashboard.jsx"; // ✅ Giao diện admin
-import Header from "./components/Header.jsx";
-import Footer from "./components/Footer.jsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import UserDashboard from "./pages/user/UserDashboard.jsx";
 
-// ✅ Route yêu cầu login
+import LayoutUser from "./layouts/LayoutUser.jsx";
+
+// ✅ Route guards
 function PrivateRoute({ children }) {
   const user = JSON.parse(localStorage.getItem("user"));
   return user ? children : <Navigate to="/login" />;
 }
-
-// ✅ Route dành cho login/register, chặn khi đã login
 function PublicRoute({ children }) {
   const user = JSON.parse(localStorage.getItem("user"));
   return user ? (
     user.maLoaiNguoiDung === "QuanTri" ? (
       <Navigate to="/admin" />
     ) : (
-      <Navigate to="/home" />
+      <Navigate to="/user" />
     )
   ) : (
     children
   );
 }
-
-// ✅ Route dành riêng cho admin
 function AdminRoute({ children }) {
   const user = JSON.parse(localStorage.getItem("user"));
-  return user?.maLoaiNguoiDung === "QuanTri" ? (
-    children
-  ) : (
-    <Navigate to="/home" />
-  );
+  return user?.maLoaiNguoiDung === "QuanTri" ? children : <Navigate to="/user" />;
+}
+function UserRoute({ children }) {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user?.maLoaiNguoiDung === "KhachHang" ? children : <Navigate to="/login" />;
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      {/* Header ẩn ở trang Admin */}
-      {window.location.pathname.startsWith("/admin") ? null : <Header />}
-
-      {/* Nội dung */}
-      <main
-        className="container-fluid flex-grow mb-5"
-        style={{ maxWidth: "2000px" }}
-      >
-        <Routes>
-          {/* Public */}
+      <Routes>
+        {/* Layout cho user */}
+        <Route element={<LayoutUser />}>
           <Route path="/" element={<LandingPage />} />
-
           <Route
             path="/login"
             element={
@@ -71,8 +60,6 @@ export default function App() {
               </PublicRoute>
             }
           />
-
-          {/* User */}
           <Route
             path="/home"
             element={
@@ -84,28 +71,35 @@ export default function App() {
           <Route
             path="/account"
             element={
-              <PrivateRoute>
+              <UserRoute>
                 <AccountPage />
-              </PrivateRoute>
+              </UserRoute>
             }
           />
           <Route path="/movies" element={<ListMoviePage />} />
           <Route path="/movies/:id" element={<ListMovieDetail />} />
 
-          {/* Admin */}
+          {/* Dashboard user */}
           <Route
-            path="/admin/*"
+            path="/user/*"
             element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
+              <UserRoute>
+                <UserDashboard />
+              </UserRoute>
             }
           />
-        </Routes>
-      </main>
+        </Route>
 
-      {/* Footer cũng ẩn ở trang Admin */}
-      {window.location.pathname.startsWith("/admin") ? null : <Footer />}
+        {/* Layout cho admin - KHÔNG bọc LayoutAdmin nữa */}
+        <Route
+          path="/admin/*"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }

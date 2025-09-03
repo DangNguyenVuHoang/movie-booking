@@ -15,10 +15,14 @@ export default function LoginPage() {
       // ✅ Điều hướng theo role
       if (user.maLoaiNguoiDung === "QuanTri") {
         navigate("/admin");
+      } else if (user.maLoaiNguoiDung === "KhachHang") {
+        navigate("/user");
       } else {
+        // fallback → nếu có role khác
         navigate("/home");
       }
     } catch (err) {
+      console.error("Login error:", err);
       message.error("Sai tài khoản hoặc mật khẩu!");
     }
   };

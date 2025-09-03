@@ -1,7 +1,13 @@
+// src/components/Header.jsx
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { UserOutlined, LogoutOutlined, LoginOutlined, IdcardOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  LoginOutlined,
+  IdcardOutlined,
+} from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../redux/authSlice";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -10,6 +16,7 @@ export default function Header() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
 
   const handleLogout = () => {
@@ -23,6 +30,9 @@ export default function Header() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // ❌ Không render Header trong admin
+  if (location.pathname.startsWith("/admin")) return null;
 
   return (
     <motion.div
@@ -41,7 +51,7 @@ export default function Header() {
           <motion.div whileHover={{ scale: 1.1 }}>
             <Navbar.Brand
               as={Link}
-              to="/"
+              to="/user/home"
               className="fw-bold text-light fs-5"
               style={{ letterSpacing: "1px" }}
             >
@@ -49,15 +59,23 @@ export default function Header() {
             </Navbar.Brand>
           </motion.div>
 
-          {/* Toggle for mobile */}
+          {/* Toggle cho mobile */}
           <Navbar.Toggle aria-controls="main-navbar" />
           <Navbar.Collapse id="main-navbar">
             {/* Navigation links */}
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/" className="fw-semibold text-light">
+              <Nav.Link
+                as={Link}
+                to="/user/home"
+                className="fw-semibold text-light"
+              >
                 Trang chủ
               </Nav.Link>
-              <Nav.Link as={Link} to="/movies" className="fw-semibold text-light">
+              <Nav.Link
+                as={Link}
+                to="/user/movies"
+                className="fw-semibold text-light"
+              >
                 Phim
               </Nav.Link>
               <Nav.Link as={Link} to="/" className="fw-semibold text-light">
@@ -80,7 +98,7 @@ export default function Header() {
                   {/* Nút vào trang Tài khoản */}
                   <Button
                     as={Link}
-                    to="/account"
+                    to="/user/account"
                     variant="outline-info"
                     size="sm"
                     className="fw-semibold"

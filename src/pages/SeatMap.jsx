@@ -1,14 +1,46 @@
 // import { Spin, Alert, Typography } from "antd";
-import { Spin, Alert, Typography, Button, message } from "antd";
+import { Spin, Alert, Typography, Button, message, notification } from "antd";
+
 import { useState } from "react";
 import bookingApi from "../api/bookingApi"; // đường dẫn import tuỳ project
 const { Text } = Typography;
 
-export default function SeatMap({ seats, selected, onSelect, loading, maLichChieu, setSelected }) {
+export default function SeatMap({
+  seats,
+  selected,
+  onSelect,
+  loading,
+  maLichChieu,
+  setSelected,
+}) {
   const [booking, setBooking] = useState(false);
-
+  const [error, setError] = useState(null);
+//   const isLoggedIn = Boolean(localStorage.getItem("user"));
   const handleBooking = async () => {
-    console.error("Booking with maLichChieu:", maLichChieu, "and seats:", selected);
+    setError(""); // reset lỗi trước khi xử lý
+    console.error(
+      "Booking with maLichChieu:",
+      maLichChieu,
+      "and seats:",
+      selected
+    );
+    // ✅ Kiểm tra đăng nhập
+    const user = localStorage.getItem("user");
+    if (!user) {
+      setError("Vui lòng đăng nhập để tiếp tục đặt vé!");
+      return;
+    }
+    // // ✅ Kiểm tra đăng nhập trước
+    // const user = localStorage.getItem("user");
+    // if (!user) {
+    //   notification.error({
+    //     message: "Yêu cầu đăng nhập",
+    //     description: "Vui lòng đăng nhập để tiếp tục đặt vé!",
+    //     placement: "top", // thông báo nổi phía trên
+    //   });
+    //   return;
+    // }
+
     if (!maLichChieu || selected.length === 0) {
       message.warning("Vui lòng chọn lịch chiếu và ghế trước khi đặt vé!");
       return;
@@ -54,16 +86,18 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
   // Bố cục 10x16 (10 hàng x 16 cột)
   const ROWS = 10;
   const COLS = 16;
-  
+
   // Tạo mảng 2D cho ghế
-  const seatGrid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
-  
+  const seatGrid = Array(ROWS)
+    .fill()
+    .map(() => Array(COLS).fill(null));
+
   // Điền ghế vào lưới dựa trên thứ tự
   seats.forEach((seat, index) => {
     // Tính toán vị trí dựa trên index
     const rowIndex = Math.floor(index / COLS);
     const colIndex = index % COLS;
-    
+
     // Đặt ghế vào lưới nếu nằm trong phạm vi
     if (rowIndex >= 0 && rowIndex < ROWS && colIndex >= 0 && colIndex < COLS) {
       seatGrid[rowIndex][colIndex] = seat;
@@ -74,12 +108,15 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
   const getSeatColor = (seat, isSelected) => {
     if (!seat) return "bg-transparent border-transparent cursor-default";
     if (isSelected) return "bg-[#ffa940] border-[#ffa940] text-white";
-    if (seat.daDat) return "bg-gray-400 border-gray-500 cursor-not-allowed text-white";
-    
+    if (seat.daDat)
+      return "bg-gray-400 border-gray-500 cursor-not-allowed text-white";
+
     switch (seat.loaiGhe) {
-      case "Vip": return "bg-[#ff4d4f] border-[#ff4d4f] hover:bg-[#ff7875] text-white";
-      case "Thuong": 
-      default: return "bg-[#1890ff] border-[#1890ff] hover:bg-[#40a9ff] text-white";
+      case "Vip":
+        return "bg-[#ff4d4f] border-[#ff4d4f] hover:bg-[#ff7875] text-white";
+      case "Thuong":
+      default:
+        return "bg-[#1890ff] border-[#1890ff] hover:bg-[#40a9ff] text-white";
     }
   };
 
@@ -98,7 +135,7 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
           MÀN HÌNH
         </div>
       </div>
-      
+
       {/* Chú thích */}
       <div className="flex justify-center gap-6 mb-8 flex-wrap">
         <div className="flex items-center gap-2">
@@ -134,25 +171,34 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
         {/* Hiển thị các hàng ghế */}
         {seatGrid.map((row, rowIndex) => {
           const rowName = String.fromCharCode(65 + rowIndex); // A, B, C, ...
-          
+
           return (
             <div key={`row-${rowIndex}`} className="flex items-center mb-2">
               {/* Hiển thị tên hàng */}
               <div className="w-8 mr-2 font-bold text-center">{rowName}</div>
-              
+
               {/* Hiển thị ghế trong hàng */}
               {row.map((seat, colIndex) => {
                 const isSelected = seat && selected.includes(seat.maGhe);
                 const isBooked = seat && seat.daDat;
                 const displayNumber = colIndex + 1;
                 const seatPosition = `${rowName}${displayNumber}`;
-                
+
                 return (
                   <div
                     key={seat ? seat.maGhe : `empty-${rowIndex}-${colIndex}`}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md border-2 font-bold text-xs mx-0.5 ${getSeatColor(seat, isSelected)}`}
+                    className={`w-8 h-8 flex items-center justify-center rounded-md border-2 font-bold text-xs mx-0.5 ${getSeatColor(
+                      seat,
+                      isSelected
+                    )}`}
                     onClick={() => handleSeatClick(seat)}
-                    title={seat ? `Ghế ${seat.tenGhe} (${seatPosition}) - ${seat.loaiGhe}${isBooked ? ' (Đã đặt)' : ''}` : `Vị trí ${seatPosition}`}
+                    title={
+                      seat
+                        ? `Ghế ${seat.tenGhe} (${seatPosition}) - ${
+                            seat.loaiGhe
+                          }${isBooked ? " (Đã đặt)" : ""}`
+                        : `Vị trí ${seatPosition}`
+                    }
                   >
                     {displayNumber}
                   </div>
@@ -168,28 +214,43 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
         <div className="mt-6 p-4 bg-white rounded-lg shadow">
           <h3 className="font-semibold mb-4 text-lg">Thông tin ghế đã chọn:</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {selected.map(seatId => {
-              const seat = seats.find(s => s.maGhe === seatId);
+            {selected.map((seatId) => {
+              const seat = seats.find((s) => s.maGhe === seatId);
               if (!seat) return null;
-              
+
               // Tìm vị trí của ghế trong mảng seats
-              const seatIndex = seats.findIndex(s => s.maGhe === seatId);
+              const seatIndex = seats.findIndex((s) => s.maGhe === seatId);
               const rowIndex = Math.floor(seatIndex / COLS);
               const colIndex = seatIndex % COLS;
               const rowName = String.fromCharCode(65 + rowIndex);
               const seatPosition = `${rowName}${colIndex + 1}`;
-              
+
               return (
-                <div key={seatId} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="font-semibold text-blue-800">Ghế: {seat.tenGhe}</div>
+                <div
+                  key={seatId}
+                  className="p-3 bg-blue-50 rounded-lg border border-blue-200"
+                >
+                  <div className="font-semibold text-blue-800">
+                    Ghế: {seat.tenGhe}
+                  </div>
                   <div className="text-sm mt-1">
-                    <div>• Vị trí: {seatPosition} (Hàng {rowName}, Cột {colIndex + 1})</div>
+                    <div>
+                      • Vị trí: {seatPosition} (Hàng {rowName}, Cột{" "}
+                      {colIndex + 1})
+                    </div>
                     <div>• Loại ghế: {seat.loaiGhe}</div>
                     <div>• Mã ghế (API): {seat.maGhe}</div>
-                    <div>• Giá: {new Intl.NumberFormat('vi-VN').format(seat.giaVe)} VNĐ</div>
-                    <div>• Trạng thái: {seat.daDat ? 
-                      <span className="text-red-600">Đã đặt</span> : 
-                      <span className="text-green-600">Còn trống</span>}
+                    <div>
+                      • Giá: {new Intl.NumberFormat("vi-VN").format(seat.giaVe)}{" "}
+                      VNĐ
+                    </div>
+                    <div>
+                      • Trạng thái:{" "}
+                      {seat.daDat ? (
+                        <span className="text-red-600">Đã đặt</span>
+                      ) : (
+                        <span className="text-green-600">Còn trống</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -204,28 +265,33 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
         <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
           <h4 className="font-semibold text-amber-800 mb-2">Tóm tắt:</h4>
           <div className="flex flex-wrap gap-2">
-            {selected.map(seatId => {
-              const seat = seats.find(s => s.maGhe === seatId);
-              const seatIndex = seats.findIndex(s => s.maGhe === seatId);
+            {selected.map((seatId) => {
+              const seat = seats.find((s) => s.maGhe === seatId);
+              const seatIndex = seats.findIndex((s) => s.maGhe === seatId);
               const rowIndex = Math.floor(seatIndex / COLS);
               const colIndex = seatIndex % COLS;
               const rowName = String.fromCharCode(65 + rowIndex);
               const seatPosition = `${rowName}${colIndex + 1}`;
-              
+
               return seat ? (
-                <span key={seatId} className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
+                <span
+                  key={seatId}
+                  className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium"
+                >
                   {seat.tenGhe} ({seatPosition}) - {seat.loaiGhe}
                 </span>
               ) : null;
             })}
           </div>
           <div className="mt-2 font-semibold">
-            Tổng tiền: {new Intl.NumberFormat('vi-VN').format(
+            Tổng tiền:{" "}
+            {new Intl.NumberFormat("vi-VN").format(
               selected.reduce((total, seatId) => {
-                const seat = seats.find(s => s.maGhe === seatId);
+                const seat = seats.find((s) => s.maGhe === seatId);
                 return total + (seat ? seat.giaVe : 0);
               }, 0)
-            )} VNĐ
+            )}{" "}
+            VNĐ
           </div>
         </div>
       )}
@@ -234,26 +300,39 @@ export default function SeatMap({ seats, selected, onSelect, loading, maLichChie
       <div className="mt-4 p-3 bg-gray-200 rounded text-xs">
         <div className="font-semibold mb-2">Thông tin dữ liệu từ API:</div>
         <div>• Tổng số ghế từ API: {seats.length}</div>
-        <div>• Bố cục hiển thị: {ROWS} hàng x {COLS} cột = {ROWS * COLS} vị trí</div>
-        <div>• 5 ghế đầu tiên: {seats.slice(0, 5).map(s => s.tenGhe).join(', ')}</div>
-        <div>• Các hàng hiển thị: A đến {String.fromCharCode(65 + ROWS - 1)}</div>
+        <div>
+          • Bố cục hiển thị: {ROWS} hàng x {COLS} cột = {ROWS * COLS} vị trí
+        </div>
+        <div>
+          • 5 ghế đầu tiên:{" "}
+          {seats
+            .slice(0, 5)
+            .map((s) => s.tenGhe)
+            .join(", ")}
+        </div>
+        <div>
+          • Các hàng hiển thị: A đến {String.fromCharCode(65 + ROWS - 1)}
+        </div>
       </div>
-          {/* Nút đặt vé */}
+      {/* Nút đặt vé */}
+      {/* Nút đặt vé + Thông báo lỗi */}
       {selected.length > 0 && (
-        <div className="mt-6 flex justify-center">
-              <Button
-      type="primary"
-      size="large"
-      loading={booking}
-      onClick={handleBooking}
-      className="mt-6"
-    >
-      Xác nhận đặt vé
-    </Button>
+        <div className="mt-6 flex justify-center items-center gap-4">
+          <Button
+            type="primary"
+            size="large"
+            loading={booking}
+            onClick={handleBooking}
+          >
+            Xác nhận đặt vé
+          </Button>
+
+          {/* ✅ Thông báo lỗi kế bên nút */}
+          {error && (
+            <Alert message={error} type="error" showIcon className="w-fit" />
+          )}
         </div>
       )}
-
     </div>
-    
   );
 }

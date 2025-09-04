@@ -59,7 +59,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/about"
+                  to="/"
                   className="text-light text-decoration-none d-block mb-2"
                 >
                   Giới thiệu
@@ -72,10 +72,10 @@ export default function Footer() {
           <Col md={4}>
             <h5 className="fw-semibold text-white mb-3">Liên hệ</h5>
             <p className="small mb-2">
-              <MailOutlined className="me-2 text-danger" /> support@moviebooking.com
+              <MailOutlined className="me-2 text-danger" /> dangnguyenvuhoang8384@gmail.com
             </p>
             <p className="small mb-3">
-              <PhoneOutlined className="me-2 text-danger" /> 0123 456 789
+              <PhoneOutlined className="me-2 text-danger" /> 0346 711 532
             </p>
             <div className="d-flex gap-3">
               <a

@@ -90,7 +90,7 @@ export default function App() {
           />
         </Route>
 
-        {/* Layout cho admin - KHÔNG bọc LayoutAdmin nữa */}
+        {/* Layout cho admin  */}
         <Route
           path="/admin/*"
           element={

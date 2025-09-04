@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 
 const userApi = {
   // 📌 Lấy danh sách người dùng theo nhóm
-  getUsers: (maNhom = "GP00") => {
+  getUsers: (maNhom = "GP05") => {
     const user = JSON.parse(localStorage.getItem("user")) || {};
     return axiosClient.get(
       `/QuanLyNguoiDung/LayDanhSachNguoiDung?MaNhom=${maNhom}`,

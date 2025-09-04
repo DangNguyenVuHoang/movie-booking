@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 
 const userApi = {
   // 📌 Lấy danh sách người dùng theo nhóm
-  getUsers: (maNhom = "GP05") => {
+  getUsers: (maNhom = "GP00") => {
     const user = JSON.parse(localStorage.getItem("user")) || {};
     return axiosClient.get(
       `/QuanLyNguoiDung/LayDanhSachNguoiDung?MaNhom=${maNhom}`,
@@ -46,6 +46,19 @@ const userApi = {
     const user = JSON.parse(localStorage.getItem("user")) || {};
     return axiosClient.delete(
       `/QuanLyNguoiDung/XoaNguoiDung?TaiKhoan=${taiKhoan}`,
+      {
+        headers: {
+          Authorization: `Bearer ${user.accessToken || ""}`,
+        },
+      }
+    );
+  },
+
+    // ✅ API Tìm kiếm người dùng
+  searchUsers: (maNhom, tuKhoa) => {
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    return axiosClient.get(
+      `/QuanLyNguoiDung/TimKiemNguoiDung?MaNhom=${maNhom}&tuKhoa=${tuKhoa}`,
       {
         headers: {
           Authorization: `Bearer ${user.accessToken || ""}`,

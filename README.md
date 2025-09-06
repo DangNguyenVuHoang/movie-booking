@@ -10,8 +10,9 @@
 ## 🚀 Cài đặt & Chạy dự án
 
 ### 1. Clone dự án
-git clone https://github.com/<username>/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/DangNguyenVuHoang/movie-booking.git
+
+cd movie-booking
 
 ### 2. Cài đặt dependencies
 npm install
@@ -71,7 +72,7 @@ Responsive UI, hỗ trợ mobile & desktop
 Tài khoản KhachHang: dangnguyenvuhoang
 Mật khẩu: 123456789
 
-Tài khoản KhachHang: vuhoangbc85
+Tài khoản QuanTri: vuhoangbc85
 Mật khẩu: 123456789
 
 ### 🌐 Triển khai

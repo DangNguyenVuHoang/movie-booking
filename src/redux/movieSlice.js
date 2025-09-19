@@ -1,33 +1,3 @@
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import movieApi from "../api/movieApi";
-
-// export const fetchMovies = createAsyncThunk("movie/fetchMovies", async () => {
-//   const res = await movieApi.getMovies();
-//   return res.content;
-// });
-
-// export const fetchBanner = createAsyncThunk("movie/fetchBanner", async () => {
-//   const res = await movieApi.getBanner();
-//   return res.content;
-// });
-
-// const movieSlice = createSlice({
-//   name: "movie",
-//   initialState: {
-//     movies: [],
-//     banners: [],
-//   },
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder.addCase(fetchMovies.fulfilled, (state, action) => {
-//       state.movies = action.payload;
-//     });
-//     builder.addCase(fetchBanner.fulfilled, (state, action) => {
-//       state.banners = action.payload;
-//     });
-//   },
-// });
-
 // export default movieSlice.reducer;
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import movieApi from "../api/movieApi";

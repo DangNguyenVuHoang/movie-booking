@@ -9,7 +9,7 @@ export default function Banner() {
 
   useEffect(() => {
     dispatch(fetchBanner());
-  }, [dispatch]);
+  }, []);
 
   return (
     <Carousel autoplay className="overflow-hidden">

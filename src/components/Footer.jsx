@@ -1,5 +1,4 @@
 // src/components/Footer.jsx
-import { Container, Row, Col } from "react-bootstrap";
 import {
   FacebookFilled,
   TwitterSquareFilled,
@@ -16,27 +15,30 @@ export default function Footer() {
   if (location.pathname.startsWith("/admin")) return null;
 
   return (
-    <footer className="bg-dark text-white pt-5 pb-3 mt-5">
-      <Container>
-        <Row className="gy-4">
+    <footer className="bg-gray-900 text-white pt-10 pb-5 mt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo + giới thiệu */}
-          <Col md={4}>
-            <h4 className="text-danger fw-bold">🎬 Movie Booking</h4>
-            <p className="text-light small mt-3">
+          <div>
+            <h4 className="text-red-500 font-bold text-xl">🎬 Movie Booking</h4>
+            <p className="text-gray-300 text-sm mt-3 leading-relaxed">
               Đặt vé xem phim nhanh chóng, tiện lợi và an toàn.
               <br />
               Trải nghiệm điện ảnh tuyệt vời cùng chúng tôi!
             </p>
-          </Col>
+          </div>
 
           {/* Liên kết nhanh */}
-          <Col md={4}>
-            <h5 className="fw-semibold text-white mb-3">Liên kết nhanh</h5>
-            <ul className="list-unstyled">
+          <div>
+            <h5 className="font-semibold text-white mb-3 text-lg">
+              Liên kết nhanh
+            </h5>
+            <ul className="space-y-2">
               <li>
                 <Link
                   to="/user/home"
-                  className="text-light text-decoration-none d-block mb-2"
+                  className="text-gray-300 hover:text-red-400 transition-colors"
                 >
                   Trang chủ
                 </Link>
@@ -44,7 +46,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/user/movies"
-                  className="text-light text-decoration-none d-block mb-2"
+                  className="text-gray-300 hover:text-red-400 transition-colors"
                 >
                   Phim
                 </Link>
@@ -52,7 +54,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/user/account"
-                  className="text-light text-decoration-none d-block mb-2"
+                  className="text-gray-300 hover:text-red-400 transition-colors"
                 >
                   Tài khoản
                 </Link>
@@ -60,29 +62,30 @@ export default function Footer() {
               <li>
                 <Link
                   to="/"
-                  className="text-light text-decoration-none d-block mb-2"
+                  className="text-gray-300 hover:text-red-400 transition-colors"
                 >
                   Giới thiệu
                 </Link>
               </li>
             </ul>
-          </Col>
+          </div>
 
           {/* Liên hệ */}
-          <Col md={4}>
-            <h5 className="fw-semibold text-white mb-3">Liên hệ</h5>
-            <p className="small mb-2">
-              <MailOutlined className="me-2 text-danger" /> dangnguyenvuhoang8384@gmail.com
+          <div>
+            <h5 className="font-semibold text-white mb-3 text-lg">Liên hệ</h5>
+            <p className="text-sm text-gray-300 mb-2 flex items-center">
+              <MailOutlined className="text-red-500 mr-2" />{" "}
+              dangnguyenvuhoang8384@gmail.com
             </p>
-            <p className="small mb-3">
-              <PhoneOutlined className="me-2 text-danger" /> 0346 711 532
+            <p className="text-sm text-gray-300 mb-4 flex items-center">
+              <PhoneOutlined className="text-red-500 mr-2" /> 0346 711 532
             </p>
-            <div className="d-flex gap-3">
+            <div className="flex gap-4 text-2xl">
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-light fs-4 hover-opacity"
+                className="text-gray-300 hover:text-blue-500 transition-colors"
               >
                 <FacebookFilled />
               </a>
@@ -90,7 +93,7 @@ export default function Footer() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-light fs-4 hover-opacity"
+                className="text-gray-300 hover:text-sky-400 transition-colors"
               >
                 <TwitterSquareFilled />
               </a>
@@ -98,20 +101,20 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-light fs-4 hover-opacity"
+                className="text-gray-300 hover:text-pink-500 transition-colors"
               >
                 <InstagramFilled />
               </a>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
 
         {/* Copyright */}
-        <hr className="border-secondary my-4" />
-        <p className="text-center text-secondary small mb-0">
+        <hr className="border-gray-700 my-6" />
+        <p className="text-center text-gray-400 text-sm">
           © {new Date().getFullYear()} Movie Booking. All rights reserved.
         </p>
-      </Container>
+      </div>
     </footer>
   );
 }

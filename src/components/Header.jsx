@@ -1,15 +1,16 @@
 // src/components/Header.jsx
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import {
   UserOutlined,
   LogoutOutlined,
   LoginOutlined,
   IdcardOutlined,
+  MenuOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../redux/authSlice";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function Header() {
@@ -18,121 +19,155 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
   };
 
-  // Lắng nghe scroll để đổi style header
+  // Đổi style khi scroll
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ❌ Không render Header trong admin
+  // Không render trong admin
   if (location.pathname.startsWith("/admin")) return null;
 
+  const navLinks = [
+    { to: "/user/home", label: "Trang chủ" },
+    { to: "/user/movies", label: "Phim" },
+    { to: "/", label: "Liên hệ" },
+  ];
+
   return (
-    <motion.div
+    <motion.header
       initial={{ y: -80 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`fixed w-full top-0 z-30 transition-colors duration-300 ${
+        scrolled ? "bg-black shadow-lg" : "bg-gray-900"
+      }`}
     >
-      <Navbar
-        expand="lg"
-        className={`py-3 px-3 ${
-          scrolled ? "bg-black shadow-lg" : "bg-dark"
-        } navbar-dark transition-all duration-300`}
-      >
-        <Container fluid>
-          {/* Logo */}
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Navbar.Brand
-              as={Link}
-              to="/user/home"
-              className="fw-bold text-light fs-5"
-              style={{ letterSpacing: "1px" }}
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-3">
+        {/* Logo */}
+        <motion.div whileHover={{ scale: 1.1 }}>
+          <Link
+            to="/user/home"
+            className="text-white font-bold text-lg tracking-wide"
+          >
+            🎬 Movie Booking
+          </Link>
+        </motion.div>
+
+        {/* Desktop Nav */}
+        <nav className="hidden lg:flex gap-6 items-center">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="text-white font-medium hover:text-cyan-400 transition-colors"
             >
-              🎬 Movie Booking
-            </Navbar.Brand>
-          </motion.div>
+              {link.label}
+            </Link>
+          ))}
 
-          {/* Toggle cho mobile */}
-          <Navbar.Toggle aria-controls="main-navbar" />
-          <Navbar.Collapse id="main-navbar">
-            {/* Navigation links */}
-            <Nav className="me-auto">
-              <Nav.Link
-                as={Link}
-                to="/user/home"
-                className="fw-semibold text-light"
+          {user ? (
+            <div className="flex items-center gap-3 text-white">
+              <UserOutlined />
+              <span className="font-semibold">{user.taiKhoan}</span>
+              <Link
+                to="/user/account"
+                className="px-3 py-1 border border-cyan-400 text-cyan-400 rounded-md hover:bg-cyan-400 hover:text-black transition"
               >
-                Trang chủ
-              </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/user/movies"
-                className="fw-semibold text-light"
+                <IdcardOutlined /> Tài khoản
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1 border border-white rounded-md hover:bg-white hover:text-black transition"
               >
-                Phim
-              </Nav.Link>
-              <Nav.Link as={Link} to="/" className="fw-semibold text-light">
-                Liên hệ
-              </Nav.Link>
-            </Nav>
+                <LogoutOutlined /> Đăng xuất
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="px-3 py-1 bg-cyan-500 text-black rounded-md font-semibold hover:bg-cyan-400 transition"
+            >
+              <LoginOutlined /> Đăng nhập
+            </Link>
+          )}
+        </nav>
 
-            {/* User actions */}
-            <Nav>
-              {user ? (
-                <motion.div
-                  className="d-flex align-items-center gap-2 text-light"
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
+        {/* Mobile button */}
+        <button
+          className="lg:hidden text-white text-2xl"
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Toggle menu"
+        >
+          {open ? <CloseOutlined /> : <MenuOutlined />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            className="lg:hidden overflow-hidden bg-gray-800"
+          >
+            <div className="flex flex-col px-4 pb-4 space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setOpen(false)}
+                  className="text-white font-medium hover:text-cyan-400 transition-colors"
                 >
-                  <UserOutlined />
-                  <span className="fw-semibold">{user.taiKhoan}</span>
+                  {link.label}
+                </Link>
+              ))}
 
-                  {/* Nút vào trang Tài khoản */}
-                  <Button
-                    as={Link}
+              {user ? (
+                <div className="flex flex-col gap-3 text-white mt-2">
+                  <div className="flex items-center gap-2">
+                    <UserOutlined />
+                    <span className="font-semibold">{user.taiKhoan}</span>
+                  </div>
+                  <Link
                     to="/user/account"
-                    variant="outline-info"
-                    size="sm"
-                    className="fw-semibold"
+                    onClick={() => setOpen(false)}
+                    className="px-3 py-1 border border-cyan-400 text-cyan-400 rounded-md hover:bg-cyan-400 hover:text-black transition text-center"
                   >
                     <IdcardOutlined /> Tài khoản
-                  </Button>
-
-                  {/* Nút đăng xuất */}
-                  <Button
-                    variant="outline-light"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="fw-semibold"
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      handleLogout();
+                    }}
+                    className="px-3 py-1 border border-white rounded-md hover:bg-white hover:text-black transition text-center"
                   >
                     <LogoutOutlined /> Đăng xuất
-                  </Button>
-                </motion.div>
+                  </button>
+                </div>
               ) : (
-                <motion.div whileHover={{ scale: 1.05 }}>
-                  <Button
-                    as={Link}
-                    to="/login"
-                    variant="primary"
-                    size="sm"
-                    className="fw-semibold"
-                  >
-                    <LoginOutlined /> Đăng nhập
-                  </Button>
-                </motion.div>
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="px-3 py-1 bg-cyan-500 text-black rounded-md font-semibold hover:bg-cyan-400 transition text-center"
+                >
+                  <LoginOutlined /> Đăng nhập
+                </Link>
               )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }

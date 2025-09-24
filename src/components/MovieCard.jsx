@@ -1,19 +1,19 @@
 import { Card, Button } from "antd";
 import { Link } from "react-router-dom";
 
-export default function MovieCard({ movie, large }) {
+export default function MovieCard({ movie }) {
   return (
     <Card
       hoverable
-      className={`rounded-xl shadow-md transition-transform hover:scale-105 ${
-        large ? "w-72" : "w-60"
-      }`}
+      className="w-full rounded-xl shadow-md transition-transform hover:scale-105 flex flex-col"
       cover={
-        <img
-          alt={movie.tenPhim}
-          src={movie.hinhAnh}
-          className={`object-cover ${large ? "h-96" : "h-80"} w-full`}
-        />
+        <div className="relative w-full aspect-[2/3] overflow-hidden">
+          <img
+            alt={movie.tenPhim}
+            src={movie.hinhAnh}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
       }
     >
       <Card.Meta
@@ -28,10 +28,10 @@ export default function MovieCard({ movie, large }) {
           </span>
         }
       />
-      <Link to={`/movies/${movie.maPhim}`}>
+      <Link to={`/movies/${movie.maPhim}`} className="block mt-4">
         <Button
           type="primary"
-          className="mt-4 w-full bg-red-600 hover:bg-red-700"
+          className="w-full bg-red-600 hover:bg-red-700"
         >
           Đặt vé
         </Button>

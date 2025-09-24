@@ -14,7 +14,7 @@ export default function UserDashboard() {
       <Header /> */}
 
       {/* ✅ Nội dung chính */}
-      <main className="flex-grow container mx-auto px-4 py-6">
+      <main >
         <Routes>
           <Route path="/" element={<Navigate to="/user/home" />} />
           <Route path="/home" element={<HomePage />} />
@@ -29,3 +29,5 @@ export default function UserDashboard() {
     </div>
   );
 }
+
+// className="flex-grow container mx-auto px-4 py-6"

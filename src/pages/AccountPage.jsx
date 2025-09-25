@@ -44,7 +44,6 @@ export default function AccountPage() {
   return (
     <div
       className="flex justify-center items-center min-h-screen"
-      style={{ background: "linear-gradient(135deg, #141E30, #243B55)" }}
     >
       <Card
         title={<h2 className="text-center text-2xl font-bold text-blue-600">👤 Thông tin tài khoản</h2>}
@@ -55,6 +54,7 @@ export default function AccountPage() {
           form={form}
           layout="vertical"
           onFinish={handleUpdate}
+          
           initialValues={user}
         >
           <Form.Item label="Tài khoản" name="taiKhoan">

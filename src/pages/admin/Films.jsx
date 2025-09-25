@@ -121,44 +121,53 @@ export default function Films() {
       key: "moTa",
       ellipsis: true,
     },
-    {
-      title: "Thao tác",
-      key: "actions",
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => {
-              setEditingMovie(record);
-              form.setFieldsValue({
-                ...record,
-                ngayKhoiChieu: dayjs(record.ngayKhoiChieu),
-              });
-            }}
-          >
-            Edit
-          </Button>
-          {/* // trong phần columns */}
-          <Button
-            type="dashed"
-            onClick={() => {
-              setShowtimeMovie(record);
-            }}
-          >
-            Tạo lịch chiếu
-          </Button>
+{
+  title: "Thao tác",
+  key: "actions",
+  render: (_, record) => (
+    <Space>
+      <Button
+        type="primary"
+        onClick={() => {
+          setEditingMovie(record);
+          form.setFieldsValue({
+            ...record,
+            ngayKhoiChieu: dayjs(record.ngayKhoiChieu),
+          });
+        }}
+      >
+        Edit
+      </Button>
 
-          <Popconfirm
-            title="Bạn có chắc muốn xóa phim này?"
-            onConfirm={() => handleDelete(record.maPhim)}
-            okText="Xóa"
-            cancelText="Hủy"
-          >
-            <Button danger>Xóa</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
+      {/* Tạo lịch chiếu */}
+      <Button
+        type="dashed"
+        onClick={() => {
+          if (record.sapChieu) {
+            message.warning(
+              "Phim này đang ở trạng thái 'Sắp chiếu'. Vui lòng đổi sang 'Đang chiếu' để tạo lịch chiếu!"
+            );
+            return;
+          }
+          setShowtimeMovie(record);
+        }}
+        disabled={record.sapChieu} // disable nút khi sapChieu = true
+      >
+        Tạo lịch chiếu
+      </Button>
+
+      <Popconfirm
+        title="Bạn có chắc muốn xóa phim này?"
+        onConfirm={() => handleDelete(record.maPhim)}
+        okText="Xóa"
+        cancelText="Hủy"
+      >
+        <Button danger>Xóa</Button>
+      </Popconfirm>
+    </Space>
+  ),
+}
+
   ];
 
   return (

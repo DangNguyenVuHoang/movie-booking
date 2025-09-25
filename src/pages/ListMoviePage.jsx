@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import movieApi from "../api/movieApi";
 import MovieCard from "../components/MovieCard";
-import { Pagination, Spin, Row, Col, Typography } from "antd";
+import { Pagination, Spin, Typography } from "antd";
 
 const { Title } = Typography;
 
@@ -11,7 +11,7 @@ export default function ListMoviePage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const pageSize = 9; // ✅ hiển thị 3x3 = 9 phim mỗi trang
+  const pageSize = 12; // 4x3 trên laptop
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -33,49 +33,46 @@ export default function ListMoviePage() {
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-red-600 to-orange-500 py-16 text-center text-white shadow-md">
-        <Title level={2} className="!text-white uppercase tracking-wide drop-shadow-md">
-          🎬 Danh Sách Phim
-        </Title>
-        <p className="mt-2 text-lg opacity-90">
-          Chọn phim yêu thích và đặt vé ngay hôm nay
-        </p>
+      {/* Hero Section - nhỏ gọn */}
+      <div className="mt-3 sm:mt-8 md:mt-10 px-4">
+        <div className="max-w-5xl mx-auto bg-gradient-to-r from-red-600 to-orange-500 py-10 sm:py-14 text-center text-white shadow-md rounded-xl">
+          <Title
+            level={2}
+            className="!text-white uppercase tracking-wide drop-shadow-md !text-xl sm:!text-2xl md:!text-3xl"
+          >
+            🎬 Danh Sách Phim
+          </Title>
+          <p className="mt-2 text-sm sm:text-base md:text-lg opacity-90">
+            Chọn phim yêu thích và đặt vé ngay hôm nay
+          </p>
+        </div>
       </div>
 
       {/* Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
+      <main className="flex-1 w-full py-8 sm:py-12">
         {loading ? (
-          <div className="flex justify-center items-center h-[400px]">
+          <div className="flex justify-center items-center h-[300px] sm:h-[400px]">
             <Spin size="large" />
           </div>
         ) : movies.length === 0 ? (
-          <div className="flex justify-center items-center h-[300px]">
-            <p className="text-gray-600 text-lg">
+          <div className="flex justify-center items-center h-[250px] sm:h-[300px]">
+            <p className="text-gray-600 text-base sm:text-lg">
               Hiện chưa có phim nào để hiển thị 🎬
             </p>
           </div>
         ) : (
           <>
-            {/* Movie Grid dùng Row & Col */}
-            <Row gutter={[32, 32]} justify="center">
+            {/* ✅ Grid phim full width */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 md:gap-8 w-full">
               {movies.map((movie) => (
-                <Col
-                  key={movie.maPhim}
-                  xs={24}   // mobile: 1 phim / hàng
-                  sm={12}   // tablet: 2 phim / hàng
-                  md={8}    // desktop: 3 phim / hàng
-                  lg={8}
-                  xl={8}
-                  className="flex justify-center"
-                >
-                  <MovieCard movie={movie} large />
-                </Col>
+                <div key={movie.maPhim} className="flex justify-center">
+                  <MovieCard movie={movie} />
+                </div>
               ))}
-            </Row>
+            </div>
 
             {/* Pagination */}
-            <div className="flex justify-center mt-12">
+            <div className="flex justify-center mt-10 sm:mt-12">
               <Pagination
                 current={page}
                 total={total}

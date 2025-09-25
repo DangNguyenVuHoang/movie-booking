@@ -12,13 +12,11 @@ export default function LoginPage() {
       const user = await dispatch(login(values)).unwrap();
       message.success("Đăng nhập thành công!");
 
-      // ✅ Điều hướng theo role
       if (user.maLoaiNguoiDung === "QuanTri") {
         navigate("/admin");
       } else if (user.maLoaiNguoiDung === "KhachHang") {
         navigate("/user");
       } else {
-        // fallback → nếu có role khác
         navigate("/home");
       }
     } catch (err) {
@@ -26,60 +24,55 @@ export default function LoginPage() {
       message.error("Sai tài khoản hoặc mật khẩu!");
     }
   };
-
+// bg-gradient-to-br from-[#141E30] to-[#243B55]
   return (
-    <div
-      className="flex justify-center items-center min-h-screen"
-      style={{
-        background: "linear-gradient(135deg, #141E30, #243B55)", // nền tối gradient
-      }}
-    >
+    <div className="flex justify-center items-center min-h-screen px-4">
       <Card
         title={
-          <h2 className="text-center text-2xl font-bold text-blue-600">
+          <h2 className="text-center text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">
             🎬 Đăng nhập
           </h2>
         }
-        className="w-96 shadow-2xl rounded-2xl"
+        className="
+          w-full
+          max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl
+          shadow-2xl rounded-2xl
+        "
         styles={{
-          header: {
-            borderBottom: "none",
-            textAlign: "center",
-          },
+          header: { borderBottom: "none", textAlign: "center" },
         }}
       >
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
-            label={<span className="font-medium">Tài khoản</span>}
+            label={<span className="font-medium text-sm sm:text-base">Tài khoản</span>}
             name="taiKhoan"
             rules={[{ required: true, message: "Vui lòng nhập tài khoản!" }]}
           >
             <Input placeholder="Nhập tài khoản" size="large" />
           </Form.Item>
+
           <Form.Item
-            label={<span className="font-medium">Mật khẩu</span>}
+            label={<span className="font-medium text-sm sm:text-base">Mật khẩu</span>}
             name="matKhau"
             rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
             <Input.Password placeholder="Nhập mật khẩu" size="large" />
           </Form.Item>
+
           <Button
             type="primary"
             htmlType="submit"
             size="large"
             block
-            style={{
-              background: "linear-gradient(90deg, #1CB5E0, #000851)",
-              border: "none",
-              fontWeight: "600",
-            }}
+            className="!bg-gradient-to-r from-[#1CB5E0] to-[#000851] !border-none font-semibold"
           >
             Đăng nhập
           </Button>
         </Form>
-        <p className="mt-4 text-center text-sm text-gray-200">
+
+        <p className="mt-4 text-center text-xs sm:text-sm text-gray-500">
           Chưa có tài khoản?{" "}
-          <Link to="/register" className="text-blue-400 hover:underline">
+          <Link to="/register" className="text-blue-500 hover:underline">
             Đăng ký ngay
           </Link>
         </p>

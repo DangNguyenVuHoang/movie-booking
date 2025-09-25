@@ -264,13 +264,13 @@ export default function SeatMap({
       )}
 
       {/* Debug + nút đặt vé */}
-      <div className="mt-4 p-3 bg-gray-200 rounded text-xs">
+      {/* <div className="mt-4 p-3 bg-gray-200 rounded text-xs">
         <div className="font-semibold mb-2">Thông tin dữ liệu từ API:</div>
         <div>• Tổng số ghế từ API: {seats.length}</div>
         <div>• Bố cục hiển thị: {ROWS} hàng x {COLS} cột = {ROWS * COLS} vị trí</div>
         <div>• 5 ghế đầu tiên: {seats.slice(0, 5).map((s) => s.tenGhe).join(", ")}</div>
         <div>• Các hàng hiển thị: A đến {String.fromCharCode(65 + ROWS - 1)}</div>
-      </div>
+      </div> */}
 
       {selected.length > 0 && (
         <div className="mt-6 flex justify-center items-center gap-4">

@@ -2,7 +2,7 @@ import Banner from "../components/Banner";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMoviesPaging } from "../redux/movieSlice";
-import { Row, Col, Typography, Pagination, Spin, Tabs } from "antd";
+import { Typography, Pagination, Spin, Tabs } from "antd";
 import MovieCard from "../components/MovieCard";
 
 const { Title } = Typography;
@@ -10,26 +10,19 @@ const { Title } = Typography;
 export default function LandingPage() {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.movie || {});
-
   const [activeKey, setActiveKey] = useState("1");
 
   // pagination riêng cho từng tab
   const [pageNowShowing, setPageNowShowing] = useState(1);
   const [pageComingSoon, setPageComingSoon] = useState(1);
 
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 8; // 2 hàng * 4 cột
 
   // data cache cho từng tab
-  const [nowShowingData, setNowShowingData] = useState({
-    movies: [],
-    total: 0,
-  });
-  const [comingSoonData, setComingSoonData] = useState({
-    movies: [],
-    total: 0,
-  });
+  const [nowShowingData, setNowShowingData] = useState({ movies: [], total: 0 });
+  const [comingSoonData, setComingSoonData] = useState({ movies: [], total: 0 });
 
-  // Fetch cho tab Đang chiếu
+  // Fetch Đang chiếu
   useEffect(() => {
     if (activeKey === "1") {
       dispatch(
@@ -42,14 +35,14 @@ export default function LandingPage() {
         .unwrap()
         .then((res) => {
           setNowShowingData({
-            movies: res.items?.filter((m) => m.dangChieu === true) || [],
+            movies: res.items?.filter((m) => m.dangChieu) || [],
             total: res.totalCount || 0,
           });
         });
     }
   }, [dispatch, activeKey, pageNowShowing]);
 
-  // Fetch cho tab Sắp chiếu
+  // Fetch Sắp chiếu
   useEffect(() => {
     if (activeKey === "2") {
       dispatch(
@@ -62,104 +55,100 @@ export default function LandingPage() {
         .unwrap()
         .then((res) => {
           setComingSoonData({
-            movies: res.items?.filter((m) => m.sapChieu === true) || [],
+            movies: res.items?.filter((m) => m.sapChieu) || [],
             total: res.totalCount || 0,
           });
         });
     }
   }, [dispatch, activeKey, pageComingSoon]);
 
+  // Grid phim full-bleed: mobile 2c, tablet 3c, laptop 4c
   const renderMovies = (list) => (
-    <Row gutter={[32, 32]} justify="center">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
       {list.map((movie) => (
-        <Col
-          key={movie.maPhim}
-          xs={24}
-          sm={12}
-          md={8}
-          lg={6}
-          xl={6}
-          className="flex justify-center"
-        >
-          <MovieCard movie={movie} large />
-        </Col>
+        <div key={movie.maPhim} className="w-full flex justify-center">
+          <MovieCard movie={movie} />
+        </div>
       ))}
-    </Row>
+    </div>
   );
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Banner */}
-      <div className="w-full h-[180px] sm:h-[250px] md:h-[350px] lg:h-[400px] overflow-hidden mb-6">
+      {/* Banner full width */}
+      <div className="w-full h-[180px] sm:h-[240px] md:h-[340px] lg:h-[420px] overflow-hidden mb-6 md:mt-8">
         <Banner />
       </div>
 
-      {/* Section Phim */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-10 py-12 bg-white shadow-lg rounded-lg">
-        <div className="text-center mb-10">
-          <Title level={2} className="uppercase tracking-wide text-red-600">
-            Đặt Vé Xem Phim
-          </Title>
-          <p className="text-gray-600">Chọn phim yêu thích và đặt vé ngay</p>
-        </div>
+      {/* Tiêu đề */}
+      <div className="w-full text-center mb-6">
+        <Title
+          level={2}
+          className="!text-xl sm:!text-2xl md:!text-3xl font-bold uppercase tracking-wide text-red-600"
+        >
+          Đặt Vé Xem Phim
+        </Title>
+        <p className="text-gray-600 text-sm md:text-base">
+          Chọn phim yêu thích và đặt vé ngay hôm nay 🎟️
+        </p>
+      </div>
 
-        <Tabs
-          activeKey={activeKey}
-          onChange={setActiveKey}
-          centered
-          destroyOnHidden
-          items={[
-            {
-              key: "1",
-              label: "Phim Đang Chiếu",
-              children:
-                loading && activeKey === "1" ? (
-                  <div className="flex justify-center items-center min-h-[300px]">
-                    <Spin size="large" />
+      {/* Tabs + nội dung full-bleed */}
+      <Tabs
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        centered
+        destroyInactiveTabPane
+        className="px-0"
+        items={[
+          {
+            key: "1",
+            label: "Phim Đang Chiếu",
+            children:
+              loading && activeKey === "1" ? (
+                <div className="flex justify-center items-center min-h-[300px]">
+                  <Spin size="large" />
+                </div>
+              ) : (
+                <>
+                  {renderMovies(nowShowingData.movies)}
+                  <div className="flex justify-center mt-8">
+                    <Pagination
+                      current={pageNowShowing}
+                      pageSize={PAGE_SIZE}
+                      total={nowShowingData.total}
+                      onChange={setPageNowShowing}
+                      showSizeChanger={false}
+                    />
                   </div>
-                ) : (
-                  <>
-                    {renderMovies(nowShowingData.movies)}
-                    <div className="flex justify-center mt-10 w-full">
-                      <Pagination
-                        current={pageNowShowing}
-                        pageSize={PAGE_SIZE}
-                        total={nowShowingData.total}
-                        onChange={setPageNowShowing}
-                        showSizeChanger={false}
-                        style={{ display: "flex", justifyContent: "center" }}
-                      />
-                    </div>
-                  </>
-                ),
-            },
-            {
-              key: "2",
-              label: "Phim Sắp Chiếu",
-              children:
-                loading && activeKey === "2" ? (
-                  <div className="flex justify-center items-center min-h-[300px]">
-                    <Spin size="large" />
+                </>
+              ),
+          },
+          {
+            key: "2",
+            label: "Phim Sắp Chiếu",
+            children:
+              loading && activeKey === "2" ? (
+                <div className="flex justify-center items-center min-h-[300px]">
+                  <Spin size="large" />
+                </div>
+              ) : (
+                <>
+                  {renderMovies(comingSoonData.movies)}
+                  <div className="flex justify-center mt-8">
+                    <Pagination
+                      current={pageComingSoon}
+                      pageSize={PAGE_SIZE}
+                      total={comingSoonData.total}
+                      onChange={setPageComingSoon}
+                      showSizeChanger={false}
+                    />
                   </div>
-                ) : (
-                  <>
-                    {renderMovies(comingSoonData.movies)}
-                    <div className="flex justify-center mt-10 w-full">
-                      <Pagination
-                        current={pageComingSoon}
-                        pageSize={PAGE_SIZE}
-                        total={comingSoonData.total}
-                        onChange={setPageComingSoon}
-                        showSizeChanger={false}
-                        style={{ display: "flex", justifyContent: "center" }}
-                      />
-                    </div>
-                  </>
-                ),
-            },
-          ]}
-        />
-      </section>
+                </>
+              ),
+          },
+        ]}
+      />
     </div>
   );
 }

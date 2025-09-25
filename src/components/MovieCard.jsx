@@ -59,7 +59,7 @@ export default function MovieCard({ movie }) {
           "
         />
         <span className="ml-2 sm:ml-3 md:ml-4 text-gray-700 font-medium text-xs sm:text-sm md:text-base whitespace-nowrap">
-          {score10}/10
+          {score10}/5
         </span>
       </div>
 

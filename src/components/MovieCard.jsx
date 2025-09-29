@@ -2,8 +2,8 @@ import { Card, Button, Tag, Rate } from "antd";
 import { Link } from "react-router-dom";
 
 export default function MovieCard({ movie }) {
-  const score10 = typeof movie.danhGia === "number" ? movie.danhGia : 0;
-  const score5 = Math.max(0, Math.min(5, score10 / 2)); // clamp về 0..5
+  // ✅ Lấy điểm gốc từ API (0–5)
+  const score5 = typeof movie.danhGia === "number" ? movie.danhGia : 0;
 
   return (
     <Card
@@ -17,7 +17,7 @@ export default function MovieCard({ movie }) {
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          {/* Trạng thái phim */}
+          {/* ✅ Trạng thái phim */}
           <div className="absolute top-2 left-2">
             {movie.dangChieu && <Tag color="green">Đang chiếu</Tag>}
             {movie.sapChieu && <Tag color="blue">Sắp chiếu</Tag>}
@@ -41,17 +41,12 @@ export default function MovieCard({ movie }) {
         }
       />
 
-      {/* Đánh giá sao — luôn 1 hàng & responsive bằng Tailwind */}
+      {/* ⭐ Đánh giá sao (0–5) */}
       <div className="mt-3 flex items-center">
         <Rate
           allowHalf
           disabled
           value={score5}
-          /* 
-           * !text-[..] ghi đè font-size mặc định của antd
-           * [&_.ant-rate-star]:mr-.. giảm khoảng cách giữa các sao
-           * whitespace-nowrap + shrink-0 để không bị rớt dòng
-           */
           className="
             shrink-0 whitespace-nowrap
             !text-[12px] sm:!text-[14px] lg:!text-[18px]
@@ -59,11 +54,11 @@ export default function MovieCard({ movie }) {
           "
         />
         <span className="ml-2 sm:ml-3 md:ml-4 text-gray-700 font-medium text-xs sm:text-sm md:text-base whitespace-nowrap">
-          {score10}/5
+          {score5.toFixed(1)}/5
         </span>
       </div>
 
-      {/* Nút đặt vé */}
+      {/* ✅ Nút đặt vé */}
       <Link to={`/movies/${movie.maPhim}`} className="block mt-4">
         <Button type="primary" className="w-full bg-red-600 hover:bg-red-700">
           Đặt vé

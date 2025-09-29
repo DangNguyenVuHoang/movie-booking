@@ -1,4 +1,7 @@
+// src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+// User pages
 import LandingPage from "./pages/LandingPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
@@ -6,44 +9,61 @@ import HomePage from "./pages/HomePage.jsx";
 import ListMoviePage from "./pages/ListMoviePage.jsx";
 import ListMovieDetail from "./pages/ListMovieDetail.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
-import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import UserDashboard from "./pages/user/UserDashboard.jsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
+// Admin pages
+import ManageUser from "./pages/admin/ManageUser.jsx";
+import Films from "./pages/admin/Films.jsx";
+import AddFilm from "./pages/admin/AddFilm.jsx";
+
+// Layouts
 import LayoutUser from "./layouts/LayoutUser.jsx";
+import LayoutAdmin from "./layouts/LayoutAdmin.jsx";
 
-// ✅ Route guards
+
+// ========== Route Guards ========== //
+function getUser() {
+  return JSON.parse(localStorage.getItem("user"));
+}
+
 function PrivateRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getUser();
   return user ? children : <Navigate to="/login" />;
 }
+
 function PublicRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user ? (
-    user.maLoaiNguoiDung === "QuanTri" ? (
-      <Navigate to="/admin" />
-    ) : (
-      <Navigate to="/user" />
-    )
-  ) : (
-    children
-  );
-}
-function AdminRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user?.maLoaiNguoiDung === "QuanTri" ? children : <Navigate to="/user" />;
-}
-function UserRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user?.maLoaiNguoiDung === "KhachHang" ? children : <Navigate to="/login" />;
+  const user = getUser();
+  if (!user) return children;
+  return user.maLoaiNguoiDung === "QuanTri"
+    ? <Navigate to="/admin" />
+    : <Navigate to="/user" />;
 }
 
+function AdminRoute({ children }) {
+  const user = getUser();
+  return user?.maLoaiNguoiDung === "QuanTri"
+    ? children
+    : <Navigate to="/login" />;
+}
+
+function UserRoute({ children }) {
+  const user = getUser();
+  return user?.maLoaiNguoiDung === "KhachHang"
+    ? children
+    : <Navigate to="/login" />;
+}
+
+
+// ========== App Component ========== //
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Layout cho user */}
+        {/* ---------- USER LAYOUT ---------- */}
         <Route element={<LayoutUser />}>
           <Route path="/" element={<LandingPage />} />
+
           <Route
             path="/login"
             element={
@@ -60,6 +80,7 @@ export default function App() {
               </PublicRoute>
             }
           />
+
           <Route
             path="/home"
             element={
@@ -68,6 +89,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/account"
             element={
@@ -76,6 +98,7 @@ export default function App() {
               </UserRoute>
             }
           />
+
           <Route path="/movies" element={<ListMoviePage />} />
           <Route path="/movies/:id" element={<ListMovieDetail />} />
 
@@ -90,15 +113,21 @@ export default function App() {
           />
         </Route>
 
-        {/* Layout cho admin  */}
+        {/* ---------- ADMIN LAYOUT ---------- */}
         <Route
           path="/admin/*"
           element={
             <AdminRoute>
-              <AdminDashboard />
+              <LayoutAdmin />
             </AdminRoute>
           }
-        />
+        >
+          {/* <Route index element={<h2>👋 Chào mừng Admin</h2>} />
+          <Route path="users" element={<ManageUser />} />
+          <Route path="movies" element={<Films />} />
+          <Route path="movies/add" element={<AddFilm />} /> */}
+           <Route path="*" element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

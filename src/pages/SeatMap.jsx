@@ -1,7 +1,8 @@
-// import { Spin, Alert, Typography } from "antd";
+// src/components/SeatMap.jsx
 import { Spin, Alert, Typography, Button, message } from "antd";
 import { useState } from "react";
 import bookingApi from "../api/bookingApi";
+
 const { Text } = Typography;
 
 export default function SeatMap({
@@ -13,17 +14,23 @@ export default function SeatMap({
   setSelected,
 }) {
   const [booking, setBooking] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleBooking = async () => {
-    setError("");
     const user = localStorage.getItem("user");
+
     if (!user) {
-      setError("Vui lòng đăng nhập để tiếp tục đặt vé!");
+      message.error({
+        content: "Vui lòng đăng nhập để tiếp tục đặt vé!",
+        duration: 5,
+      });
       return;
     }
+
     if (!maLichChieu || selected.length === 0) {
-      message.warning("Vui lòng chọn lịch chiếu và ghế trước khi đặt vé!");
+      message.warning({
+        content: "Vui lòng chọn lịch chiếu và ghế trước khi đặt vé!",
+        duration: 5,
+      });
       return;
     }
 
@@ -35,11 +42,17 @@ export default function SeatMap({
     try {
       setBooking(true);
       await bookingApi.bookTicket({ maLichChieu, danhSachVe });
-      message.success("Đặt vé thành công!");
+      message.success({
+        content: "Đặt vé thành công!",
+        duration: 5,
+      });
       setSelected([]);
     } catch (err) {
       console.error(err);
-      message.error("Đặt vé thất bại!");
+      message.error({
+        content: "Đặt vé thất bại!",
+        duration: 5,
+      });
     } finally {
       setBooking(false);
     }
@@ -65,16 +78,17 @@ export default function SeatMap({
     );
   }
 
-  // Lưới 10x16
+  // --- Lưới ghế ---
   const ROWS = 10;
   const COLS = 16;
 
-  // Kích thước ghế & nhãn responsive (đồng bộ)
-  const seatBox = "w-7 h-7 text-[10px] sm:w-8 sm:h-8 sm:text-[11px] md:w-8 md:h-8 md:text-xs lg:w-9 lg:h-9";
-  const labelBox = "w-7 sm:w-8 md:w-8 lg:w-9"; // dùng cho nhãn hàng & ô trống đầu dòng
-  const gapX = "mx-0.5"; // khoảng cách ngang giữa ghế
+  // Responsive box size
+  const seatBox =
+    "w-7 h-7 text-[10px] sm:w-8 sm:h-8 sm:text-[11px] md:w-8 md:h-8 md:text-xs lg:w-9 lg:h-9";
+  const labelBox = "w-7 sm:w-8 md:w-8 lg:w-9";
+  const gapX = "mx-0.5";
 
-  // Chuẩn hoá seats thành ma trận
+  // Tạo ma trận ghế
   const seatGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
   seats.forEach((seat, index) => {
     const r = Math.floor(index / COLS);
@@ -85,7 +99,8 @@ export default function SeatMap({
   const getSeatColor = (seat, isSelected) => {
     if (!seat) return "bg-transparent border-transparent cursor-default";
     if (isSelected) return "bg-[#ffa940] border-[#ffa940] text-white";
-    if (seat.daDat) return "bg-gray-400 border-gray-500 cursor-not-allowed text-white";
+    if (seat.daDat)
+      return "bg-gray-400 border-gray-500 cursor-not-allowed text-white";
     switch (seat.loaiGhe) {
       case "Vip":
         return "bg-[#ff4d4f] border-[#ff4d4f] hover:bg-[#ff7875] text-white";
@@ -128,22 +143,17 @@ export default function SeatMap({
         </div>
       </div>
 
-      {/* Sơ đồ ghế: cho phép cuộn ngang trên mobile */}
+      {/* Sơ đồ ghế */}
       <div className="w-full overflow-x-auto">
-        {/* Bên trong dùng w-max để chiều rộng bám theo nội dung; 
-            md:items-center để căn giữa trên màn lớn */}
         <div className="flex flex-col items-start md:items-center w-max mx-auto">
-          {/* Dòng số cột */}
+          {/* Hàng số cột */}
           <div className="flex mb-1 sm:mb-2">
             <div className={`${labelBox} mr-2`} />
             {Array.from({ length: COLS }, (_, i) => (
               <div
                 key={`col-${i}`}
                 className={`${labelBox} text-center font-bold text-[10px] sm:text-xs`}
-              >
-                {/* Phân cột ngang bằng cách i +1, tuy nhiên không sử dụng, và hiển thị nữa */}
-                {/* {i + 1} */}
-              </div>
+              />
             ))}
           </div>
 
@@ -151,19 +161,22 @@ export default function SeatMap({
           {seatGrid.map((row, rowIndex) => {
             const rowName = String.fromCharCode(65 + rowIndex);
             return (
-              <div key={`row-${rowIndex}`} className="flex items-center mb-1.5 sm:mb-2">
+              <div
+                key={`row-${rowIndex}`}
+                className="flex items-center mb-1.5 sm:mb-2"
+              >
                 {/* Nhãn hàng */}
-                <div className={`${labelBox} mr-2 font-bold text-center text-xs sm:text-sm`}>
+                <div
+                  className={`${labelBox} mr-2 font-bold text-center text-xs sm:text-sm`}
+                >
                   {rowName}
                 </div>
 
-                {/* Ghế trong hàng */}
+                {/* Ghế */}
                 {row.map((seat, colIndex) => {
                   const isSelected = seat && selected.includes(seat.maGhe);
-                  const isBooked = seat && seat.daDat;
                   const displayNumber = colIndex + 1;
                   const seatPosition = `${rowName}${displayNumber}`;
-
                   return (
                     <div
                       key={seat ? seat.maGhe : `empty-${rowIndex}-${colIndex}`}
@@ -175,7 +188,7 @@ export default function SeatMap({
                       title={
                         seat
                           ? `Ghế ${seat.tenGhe} (${seatPosition}) - ${seat.loaiGhe}${
-                              isBooked ? " (Đã đặt)" : ""
+                              seat.daDat ? " (Đã đặt)" : ""
                             }`
                           : `Vị trí ${seatPosition}`
                       }
@@ -193,7 +206,9 @@ export default function SeatMap({
       {/* Thông tin ghế đã chọn */}
       {selected.length > 0 && (
         <div className="mt-6 p-4 bg-white rounded-lg shadow">
-          <h3 className="font-semibold mb-4 text-base sm:text-lg">Thông tin ghế đã chọn:</h3>
+          <h3 className="font-semibold mb-4 text-base sm:text-lg">
+            Thông tin ghế đã chọn:
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {selected.map((seatId) => {
               const seat = seats.find((s) => s.maGhe === seatId);
@@ -203,15 +218,25 @@ export default function SeatMap({
               const colIndex = seatIndex % COLS;
               const rowName = String.fromCharCode(65 + rowIndex);
               const seatPosition = `${rowName}${colIndex + 1}`;
-
               return (
-                <div key={seatId} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="font-semibold text-blue-800">Ghế: {seat.tenGhe}</div>
+                <div
+                  key={seatId}
+                  className="p-3 bg-blue-50 rounded-lg border border-blue-200"
+                >
+                  <div className="font-semibold text-blue-800">
+                    Ghế: {seat.tenGhe}
+                  </div>
                   <div className="text-sm mt-1">
-                    <div>• Vị trí: {seatPosition} (Hàng {rowName}, Cột {colIndex + 1})</div>
+                    <div>
+                      • Vị trí: {seatPosition} (Hàng {rowName}, Cột{" "}
+                      {colIndex + 1})
+                    </div>
                     <div>• Loại ghế: {seat.loaiGhe}</div>
                     <div>• Mã ghế (API): {seat.maGhe}</div>
-                    <div>• Giá: {new Intl.NumberFormat("vi-VN").format(seat.giaVe)} VNĐ</div>
+                    <div>
+                      • Giá:{" "}
+                      {new Intl.NumberFormat("vi-VN").format(seat.giaVe)} VNĐ
+                    </div>
                     <div>
                       • Trạng thái:{" "}
                       {seat.daDat ? (
@@ -263,21 +288,17 @@ export default function SeatMap({
         </div>
       )}
 
-      {/* Debug + nút đặt vé */}
-      {/* <div className="mt-4 p-3 bg-gray-200 rounded text-xs">
-        <div className="font-semibold mb-2">Thông tin dữ liệu từ API:</div>
-        <div>• Tổng số ghế từ API: {seats.length}</div>
-        <div>• Bố cục hiển thị: {ROWS} hàng x {COLS} cột = {ROWS * COLS} vị trí</div>
-        <div>• 5 ghế đầu tiên: {seats.slice(0, 5).map((s) => s.tenGhe).join(", ")}</div>
-        <div>• Các hàng hiển thị: A đến {String.fromCharCode(65 + ROWS - 1)}</div>
-      </div> */}
-
+      {/* Nút đặt vé */}
       {selected.length > 0 && (
         <div className="mt-6 flex justify-center items-center gap-4">
-          <Button type="primary" size="large" loading={booking} onClick={handleBooking}>
+          <Button
+            type="primary"
+            size="large"
+            loading={booking}
+            onClick={handleBooking}
+          >
             Xác nhận đặt vé
           </Button>
-          {error && <Alert message={error} type="error" showIcon className="w-fit" />}
         </div>
       )}
     </div>

@@ -8,7 +8,8 @@ import {
 } from "@ant-design/icons";
 import { Link, Outlet } from "react-router-dom";
 import { useState } from "react";
-import Header from "../components/Header"; // Dùng lại Header chung
+import Header from "../components/Header"; 
+import Footer from "../components/Footer";
 
 const { Sider, Content } = Layout;
 
@@ -53,30 +54,35 @@ export default function LayoutAdmin() {
         {menuItems}
       </Sider>
 
-{/* Drawer mobile */}
-<Drawer
-  placement="left"
-  open={drawerOpen}
-  onClose={() => setDrawerOpen(false)}
-  width={220}
-  className="drawer-admin md:hidden"
-  title={
-    <div className="flex items-center gap-2">
-      <span>⚙️</span>
-      <span className="font-semibold">Admin</span>
-    </div>
-  }
-  bodyStyle={{ padding: 0 }}   // 👈 ép bỏ padding antd
->
-  <div className="h-full">{menuItems}</div>
-</Drawer>
+      {/* Drawer mobile */}
+      <Drawer
+        placement="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        width={220}
+        className="drawer-admin md:hidden"
+        title={
+          <div className="flex items-center gap-2">
+            <span>⚙️</span>
+            <span className="font-semibold">Admin</span>
+          </div>
+        }
+        bodyStyle={{ padding: 0 }} // bỏ padding mặc định
+      >
+        <div className="h-full">{menuItems}</div>
+      </Drawer>
 
       {/* Nội dung chính */}
-      <Layout>
+      <Layout className="flex flex-col">
         <Header mode="admin" onMenuClick={() => setDrawerOpen(true)} />
-        <Content className="p-4 sm:p-6">
+
+        {/* Content fill height */}
+        <Content className="flex-1 p-4 sm:p-6 bg-white">
           <Outlet />
         </Content>
+
+        {/* Footer */}
+        <Footer />
       </Layout>
     </Layout>
   );

@@ -17,20 +17,20 @@ const { Search } = Input;
 
 export default function ManageUser() {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]); // ✅ list để search/filter
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState(null); // ✅ phải chọn nhóm trước
+  const [selectedGroup, setSelectedGroup] = useState(null);
 
-  // 📌 State cho modal edit
+  // State modal edit
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [form] = Form.useForm();
 
-  // 📌 State cho modal add
+  // State modal add
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [addForm] = Form.useForm();
 
-  // 📌 Lấy danh sách user theo nhóm
+  // Fetch users theo nhóm
   const fetchUsers = async (maNhom) => {
     if (!maNhom) return;
     try {
@@ -38,7 +38,7 @@ export default function ManageUser() {
       const res = await userApi.getUsers(maNhom);
       const data = res?.content || [];
       setUsers(data);
-      setFilteredUsers(data); // reset danh sách gốc
+      setFilteredUsers(data);
     } catch (err) {
       message.error("❌ Lỗi khi tải danh sách người dùng");
     } finally {
@@ -46,10 +46,10 @@ export default function ManageUser() {
     }
   };
 
-  // 📌 Search user (filter trên client)
+  // Search user
   const handleSearch = (value) => {
     if (!value) {
-      setFilteredUsers(users); // reset
+      setFilteredUsers(users);
       return;
     }
     const lower = value.toLowerCase();
@@ -62,7 +62,7 @@ export default function ManageUser() {
     setFilteredUsers(filtered);
   };
 
-  // 📌 Xoá user
+  // Xoá user
   const handleDelete = async (taiKhoan) => {
     try {
       await userApi.deleteUser(taiKhoan);
@@ -77,63 +77,39 @@ export default function ManageUser() {
     }
   };
 
-  // 📌 Bấm nút sửa
+  // Edit user
   const handleEdit = (user) => {
     setEditingUser(user);
     form.setFieldsValue(user);
     setIsModalOpen(true);
   };
 
-  // 📌 Cập nhật user
+  // Update user
   const handleUpdate = async () => {
     try {
       const values = await form.validateFields();
-      const payload = {
-        taiKhoan: values.taiKhoan,
-        matKhau: values.matKhau,
-        email: values.email,
-        soDt: values.soDT,
-        maNhom: values.maNhom,
-        maLoaiNguoiDung: values.maLoaiNguoiDung,
-        hoTen: values.hoTen,
-      };
+      const payload = { ...values, soDt: values.soDT };
       await userApi.updateUser(payload);
       message.success("✅ Cập nhật người dùng thành công");
       setIsModalOpen(false);
       fetchUsers(selectedGroup);
     } catch (err) {
-      const errorMsg =
-        err?.response?.data?.content ||
-        err?.message ||
-        "❌ Cập nhật thất bại, vui lòng thử lại!";
-      message.error(errorMsg);
+      message.error(err?.response?.data?.content || "❌ Cập nhật thất bại!");
     }
   };
 
-  // 📌 Tạo mới user
+  // Add user
   const handleAddUser = async () => {
     try {
       const values = await addForm.validateFields();
-      const payload = {
-        taiKhoan: values.taiKhoan,
-        matKhau: values.matKhau,
-        email: values.email,
-        soDt: values.soDT,
-        maNhom: values.maNhom,
-        maLoaiNguoiDung: values.maLoaiNguoiDung,
-        hoTen: values.hoTen,
-      };
+      const payload = { ...values, soDt: values.soDT };
       await userApi.addUser(payload);
       message.success("✅ Thêm người dùng thành công");
       setIsAddModalOpen(false);
       addForm.resetFields();
       fetchUsers(selectedGroup);
     } catch (err) {
-      const errorMsg =
-        err?.response?.data?.content ||
-        err?.message ||
-        "❌ Thêm người dùng thất bại!";
-      message.error(errorMsg);
+      message.error(err?.response?.data?.content || "❌ Thêm người dùng thất bại!");
     }
   };
 
@@ -148,7 +124,9 @@ export default function ManageUser() {
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button type="primary" onClick={() => handleEdit(record)}>Sửa</Button>
+          <Button type="primary" onClick={() => handleEdit(record)}>
+            Sửa
+          </Button>
           <Popconfirm
             title="Bạn có chắc muốn xoá người dùng này?"
             okText="Xoá"
@@ -163,13 +141,17 @@ export default function ManageUser() {
   ];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">👥 Quản lý người dùng</h2>
-        <div className="flex gap-2">
+    <div className="p-2 sm:p-4 lg:p-6">
+      {/* Header actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+          👥 Quản lý người dùng
+        </h2>
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
           <Select
             placeholder="Chọn nhóm"
-            style={{ width: 120 }}
+            className="w-full sm:w-32"
             onChange={(value) => {
               setSelectedGroup(value);
               fetchUsers(value);
@@ -190,28 +172,33 @@ export default function ManageUser() {
             onSearch={handleSearch}
             enterButton
             allowClear
-            disabled={!selectedGroup} // ✅ chưa chọn nhóm thì disable
+            disabled={!selectedGroup}
+            className="w-full sm:w-60"
           />
 
           <Button
             type="primary"
             onClick={() => setIsAddModalOpen(true)}
-            disabled={!selectedGroup} // ✅ chưa chọn nhóm thì không cho thêm
+            disabled={!selectedGroup}
+            className="w-full sm:w-auto"
           >
             ➕ Thêm người dùng
           </Button>
         </div>
       </div>
 
+      {/* Table */}
       <Table
         rowKey="taiKhoan"
         columns={columns}
         dataSource={filteredUsers}
         loading={loading}
         pagination={{ pageSize: 8 }}
+        scroll={{ x: "max-content" }} // ✅ cho mobile scroll ngang
+        className="shadow rounded"
       />
 
-      {/* Modal Edit User */}
+      {/* Modal Edit */}
       <Modal
         title="✏️ Sửa thông tin người dùng"
         open={isModalOpen}
@@ -219,6 +206,8 @@ export default function ManageUser() {
         onCancel={() => setIsModalOpen(false)}
         okText="Cập nhật"
         cancelText="Hủy"
+        width="90%"
+        className="max-w-lg"
       >
         <Form form={form} layout="vertical">
           <Form.Item name="taiKhoan" label="Tài khoản">
@@ -234,22 +223,18 @@ export default function ManageUser() {
           <Form.Item
             name="email"
             label="Email"
-            rules={[{ required: true, type: "email", message: "Email không hợp lệ" }]}
+            rules={[{ required: true, type: "email" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="soDT"
             label="Số điện thoại"
-            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+            rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            name="maNhom"
-            label="Nhóm"
-            rules={[{ required: true, message: "Vui lòng chọn nhóm" }]}
-          >
+          <Form.Item name="maNhom" label="Nhóm" rules={[{ required: true }]}>
             <Select>
               {Array.from({ length: 8 }).map((_, i) => {
                 const value = `GP0${i}`;
@@ -261,27 +246,19 @@ export default function ManageUser() {
               })}
             </Select>
           </Form.Item>
-          <Form.Item
-            name="maLoaiNguoiDung"
-            label="Loại người dùng"
-            rules={[{ required: true, message: "Vui lòng chọn loại người dùng" }]}
-          >
+          <Form.Item name="maLoaiNguoiDung" label="Loại người dùng" rules={[{ required: true }]}>
             <Select>
               <Select.Option value="KhachHang">Khách hàng</Select.Option>
               <Select.Option value="QuanTri">Quản trị</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            name="matKhau"
-            label="Mật khẩu"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
-          >
+          <Form.Item name="matKhau" label="Mật khẩu" rules={[{ required: true }]}>
             <Input.Password />
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* Modal Add User */}
+      {/* Modal Add */}
       <Modal
         title="➕ Thêm người dùng mới"
         open={isAddModalOpen}
@@ -289,41 +266,23 @@ export default function ManageUser() {
         onCancel={() => setIsAddModalOpen(false)}
         okText="Thêm"
         cancelText="Hủy"
+        width="90%"
+        className="max-w-lg"
       >
         <Form form={addForm} layout="vertical" initialValues={{ maNhom: selectedGroup }}>
-          <Form.Item
-            name="taiKhoan"
-            label="Tài khoản"
-            rules={[{ required: true, message: "Vui lòng nhập tài khoản" }]}
-          >
+          <Form.Item name="taiKhoan" label="Tài khoản" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="hoTen"
-            label="Họ tên"
-            rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
-          >
+          <Form.Item name="hoTen" label="Họ tên" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[{ required: true, type: "email", message: "Email không hợp lệ" }]}
-          >
+          <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="soDT"
-            label="Số điện thoại"
-            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
-          >
+          <Form.Item name="soDT" label="Số điện thoại" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="maNhom"
-            label="Nhóm"
-            rules={[{ required: true, message: "Vui lòng chọn nhóm" }]}
-          >
+          <Form.Item name="maNhom" label="Nhóm" rules={[{ required: true }]}>
             <Select>
               {Array.from({ length: 8 }).map((_, i) => {
                 const value = `GP0${i}`;
@@ -335,21 +294,13 @@ export default function ManageUser() {
               })}
             </Select>
           </Form.Item>
-          <Form.Item
-            name="maLoaiNguoiDung"
-            label="Loại người dùng"
-            rules={[{ required: true, message: "Vui lòng chọn loại người dùng" }]}
-          >
+          <Form.Item name="maLoaiNguoiDung" label="Loại người dùng" rules={[{ required: true }]}>
             <Select>
               <Select.Option value="KhachHang">Khách hàng</Select.Option>
               <Select.Option value="QuanTri">Quản trị</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            name="matKhau"
-            label="Mật khẩu"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
-          >
+          <Form.Item name="matKhau" label="Mật khẩu" rules={[{ required: true }]}>
             <Input.Password />
           </Form.Item>
         </Form>

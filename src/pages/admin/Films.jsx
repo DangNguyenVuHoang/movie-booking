@@ -1,3 +1,4 @@
+// src/pages/admin/Films.jsx
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -16,8 +17,7 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import movieApi from "../../api/movieApi";
-import ModalFormTaoLichChieu from "../../pages/admin/ModalFormTaoLichChieu";
-import { NavLink } from "react-router-dom";
+import ModalFormTaoLichChieu from "./ModalFormTaoLichChieu";
 
 export default function Films() {
   const [movies, setMovies] = useState([]);
@@ -26,14 +26,13 @@ export default function Films() {
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
   const [showtimeMovie, setShowtimeMovie] = useState(null);
-  const [showtimeForm] = Form.useForm();
 
   // ✅ Load danh sách phim
   const fetchMovies = async () => {
     try {
       setLoading(true);
       const res = await movieApi.getMovies();
-      setMovies(res.content); // API trả về { content: [...] }
+      setMovies(res.content || []);
     } catch (err) {
       console.error(err);
       message.error("Không tải được danh sách phim!");
@@ -92,16 +91,17 @@ export default function Films() {
 
   // ✅ Columns cho bảng
   const columns = [
-    {
-      title: "Mã phim",
-      dataIndex: "maPhim",
-      key: "maPhim",
-      width: 100,
-    },
+    { title: "Mã phim", dataIndex: "maPhim", key: "maPhim", width: 90 },
     {
       title: "Tên phim",
       dataIndex: "tenPhim",
       key: "tenPhim",
+      // Cách 1: Tự động xuống dòng
+      render: (text) => (
+        <div className="whitespace-normal break-words max-w-[200px]">
+          {text}
+        </div>
+      ),
     },
     {
       title: "Hình ảnh",
@@ -111,7 +111,7 @@ export default function Films() {
         <img
           src={text}
           alt="poster"
-          style={{ width: 60, height: 90, objectFit: "cover", borderRadius: 6 }}
+          className="w-14 h-20 object-cover rounded-md"
         />
       ),
     },
@@ -120,66 +120,80 @@ export default function Films() {
       dataIndex: "moTa",
       key: "moTa",
       ellipsis: true,
+      responsive: ["lg"], // ❌ ẩn ở mobile/tablet, chỉ hiện ở laptop
     },
-{
-  title: "Thao tác",
-  key: "actions",
-  render: (_, record) => (
-    <Space>
-      <Button
-        type="primary"
-        onClick={() => {
-          setEditingMovie(record);
-          form.setFieldsValue({
-            ...record,
-            ngayKhoiChieu: dayjs(record.ngayKhoiChieu),
-          });
-        }}
-      >
-        Edit
-      </Button>
+    {
+      title: "Thao tác",
+      key: "actions",
+      render: (_, record) => (
+        <Space
+          direction="vertical"
+          size="small"
+          className="sm:flex-row sm:space-x-2"
+        >
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              setEditingMovie(record);
+              form.setFieldsValue({
+                ...record,
+                ngayKhoiChieu: dayjs(record.ngayKhoiChieu),
+              });
+            }}
+          >
+            Sửa
+          </Button>
 
-      {/* Tạo lịch chiếu */}
-      <Button
-        type="dashed"
-        onClick={() => {
-          if (record.sapChieu) {
-            message.warning(
-              "Phim này đang ở trạng thái 'Sắp chiếu'. Vui lòng đổi sang 'Đang chiếu' để tạo lịch chiếu!"
-            );
-            return;
-          }
-          setShowtimeMovie(record);
-        }}
-        disabled={record.sapChieu} // disable nút khi sapChieu = true
-      >
-        Tạo lịch chiếu
-      </Button>
+          <Button
+            type="dashed"
+            size="small"
+            onClick={() => {
+              if (record.sapChieu) {
+                message.warning(
+                  "Phim này đang ở trạng thái 'Sắp chiếu'. Vui lòng đổi sang 'Đang chiếu' để tạo lịch chiếu!"
+                );
+                return;
+              }
+              setShowtimeMovie(record);
+            }}
+            disabled={record.sapChieu}
+          >
+            Lịch chiếu
+          </Button>
 
-      <Popconfirm
-        title="Bạn có chắc muốn xóa phim này?"
-        onConfirm={() => handleDelete(record.maPhim)}
-        okText="Xóa"
-        cancelText="Hủy"
-      >
-        <Button danger>Xóa</Button>
-      </Popconfirm>
-    </Space>
-  ),
-}
-
+          <Popconfirm
+            title="Bạn có chắc muốn xóa phim này?"
+            onConfirm={() => handleDelete(record.maPhim)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button danger size="small">
+              Xóa
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
   ];
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">🎬 Danh sách phim</h2>
-      <Table
-        rowKey="maPhim"
-        columns={columns}
-        dataSource={movies}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-      />
+    <div className="p-2 sm:p-4 lg:p-6">
+      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4">
+        🎬 Danh sách phim
+      </h2>
+
+      {/* Table có thể cuộn ngang ở mobile */}
+      <div className="overflow-x-auto">
+        <Table
+          rowKey="maPhim"
+          columns={columns}
+          dataSource={movies}
+          loading={loading}
+          pagination={{ pageSize: 10 }}
+          scroll={{ x: 600 }} // cho phép scroll ngang ở mobile
+        />
+      </div>
 
       {/* Modal Edit */}
       <Modal
@@ -187,6 +201,8 @@ export default function Films() {
         title="Cập nhật phim"
         onCancel={() => setEditingMovie(null)}
         footer={null}
+        width="95%"
+        className="max-w-2xl"
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={handleUpdate}>
@@ -207,7 +223,7 @@ export default function Films() {
             <Input.TextArea rows={3} />
           </Form.Item>
           <Form.Item name="ngayKhoiChieu" label="Ngày khởi chiếu">
-            <DatePicker format="DD/MM/YYYY" />
+            <DatePicker format="DD/MM/YYYY" className="w-full" />
           </Form.Item>
           <Form.Item name="sapChieu" label="Sắp chiếu" valuePropName="checked">
             <Switch />
@@ -223,7 +239,7 @@ export default function Films() {
             <Switch />
           </Form.Item>
           <Form.Item name="danhGia" label="Đánh giá">
-            <InputNumber min={1} max={10} />
+            <InputNumber min={1} max={10} className="w-full" />
           </Form.Item>
           <Form.Item label="Hình ảnh">
             <Upload
@@ -232,18 +248,20 @@ export default function Films() {
                 return false;
               }}
               maxCount={1}
+              accept="image/*"
             >
               <Button icon={<UploadOutlined />}>Chọn file</Button>
             </Upload>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Cập nhật
+            <Button type="primary" htmlType="submit" block>
+              Lưu thay đổi
             </Button>
           </Form.Item>
         </Form>
       </Modal>
-      {/* // trong return JSX cuối cùng */}
+
+      {/* Modal Tạo lịch chiếu */}
       <ModalFormTaoLichChieu
         open={!!showtimeMovie}
         onClose={() => setShowtimeMovie(null)}

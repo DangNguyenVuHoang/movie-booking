@@ -17,12 +17,7 @@ export default function LayoutAdmin() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const menuItems = (
-    <Menu
-      theme="dark"
-      mode="inline"
-      defaultSelectedKeys={["1"]}
-      className="h-full border-r-0"
-    >
+    <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
       <Menu.Item key="1" icon={<DashboardOutlined />}>
         <Link to="/admin/home">Dashboard</Link>
       </Menu.Item>
@@ -58,28 +53,28 @@ export default function LayoutAdmin() {
         {menuItems}
       </Sider>
 
-      {/* Drawer mobile */}
-      <Drawer
-        placement="left"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        width={220}
-        className="drawer-admin md:hidden"
-        title={
-          <div className="flex items-center gap-2">
-            <span>⚙️</span>
-            <span className="font-semibold">Admin</span>
-          </div>
-        }
-      >
-        {menuItems}
-      </Drawer>
+{/* Drawer mobile */}
+<Drawer
+  placement="left"
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  width={220}
+  className="drawer-admin md:hidden"
+  title={
+    <div className="flex items-center gap-2">
+      <span>⚙️</span>
+      <span className="font-semibold">Admin</span>
+    </div>
+  }
+  bodyStyle={{ padding: 0 }}   // 👈 ép bỏ padding antd
+>
+  <div className="h-full">{menuItems}</div>
+</Drawer>
 
       {/* Nội dung chính */}
       <Layout>
         <Header mode="admin" onMenuClick={() => setDrawerOpen(true)} />
-        <Content className="m-4 bg-white p-4 sm:p-6 rounded shadow-sm">
-          {/* Chỗ này render các route con */}
+        <Content className="p-4 sm:p-6">
           <Outlet />
         </Content>
       </Layout>
